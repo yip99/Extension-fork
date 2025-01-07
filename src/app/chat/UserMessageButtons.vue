@@ -1,5 +1,6 @@
 <template>
 	<div class="seventv-chat-message-buttons">
+		<div class="seventv-button" @click="saveMessageWithTime">+</div>
 		<div
 			v-if="showCopyIcon && !msg.moderation.deleted"
 			ref="copyButtonRef"
@@ -102,6 +103,16 @@ const copyToastContainer = useFloatScreen(copyButtonRef, {
 	enabled: () => copyToastOpen.value,
 	middleware: [shift({ padding: 8 })],
 });
+
+function saveMessageWithTime(): void {
+	const int = JSON.parse(localStorage.getItem("myInt") || "{}");
+	const time = new Date(props.msg.timestamp);
+	const HH = time.getHours().toString().padStart(2, "0");
+	const mm = time.getMinutes().toString().padStart(2, "0");
+	const ss = time.getSeconds().toString().padStart(2, "0");
+	int[props.msg.id] = `${props.msg.body}\t${HH}${mm}${ss}`;
+	localStorage.setItem("myInt", JSON.stringify(int));
+}
 
 function copyMessage() {
 	if (copyToastOpen.value) return;
