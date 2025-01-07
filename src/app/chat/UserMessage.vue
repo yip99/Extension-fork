@@ -276,7 +276,7 @@ watchEffect(() => {
 	display: block;
 
 	&.has-highlight {
-		padding: 1rem calc(var(--seventv-chat-padding, 1rem) - 0.25rem);
+		padding: 0.5rem calc(var(--seventv-chat-padding, 1rem) - 0.25rem);
 		margin: -0.5rem;
 		margin-left: calc(var(--seventv-chat-padding, 1rem) * -1);
 		margin-right: calc(-1 * var(--seventv-chat-padding, 1rem) + 0.25rem);
