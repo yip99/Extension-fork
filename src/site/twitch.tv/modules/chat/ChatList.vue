@@ -154,6 +154,8 @@ const onMessage = (msgData: Twitch.AnyMessage): boolean => {
 
 function onChatMessage(msg: ChatMessage, msgData: Twitch.AnyMessage, shouldRender = true) {
 	const c = getMessageComponent(msgData.type);
+    let highlightColor = "";
+	let highlightText = "";
 	if (c) {
 		msg.setComponent(c, { msgData: msgData });
 	}
@@ -163,7 +165,8 @@ function onChatMessage(msg: ChatMessage, msgData: Twitch.AnyMessage, shouldRende
 	}
 
 	if (msgData.type === MessageType.RESTRICTED_LOW_TRUST_USER_MESSAGE && showRestrictedLowTrustUser.value) {
-		msg.setHighlight("#ff7d00", "Restricted Suspicious User");
+        highlightColor = "#ff7d00";
+		highlightText = "Restricted Suspicious User";
 	}
 
 	let sourceRoomID =
@@ -215,7 +218,8 @@ function onChatMessage(msg: ChatMessage, msgData: Twitch.AnyMessage, shouldRende
 				return;
 			}
 
-			msg.setHighlight("#9488855A", "You Blocked This User");
+			highlightColor = "#9488855A";
+			highlightText = "You Blocked This User";
 		}
 
 		if (identity.value && msg.author && msg.author.id === identity.value.id) {
@@ -233,14 +237,15 @@ function onChatMessage(msg: ChatMessage, msgData: Twitch.AnyMessage, shouldRende
 
 		// assign highlight
 		if (msgData.isFirstMsg && showFirstTimeChatter.value) {
-			msg.setHighlight("#c832c8", "First Message");
+			highlightColor = "var(--color-text-base)";
 		}
 
 		if (msg.author) {
 			const lowTrust = messages.lowTrustUsers[msg.author.id];
 
 			if (lowTrust && lowTrust.treatment.type === "ACTIVE_MONITORING" && showMonitoredLowTrustUser.value) {
-				msg.setHighlight("#ff7d00", "Monitored Suspicious User");
+				highlightColor = "#ff7d00";
+				highlightText = "Monitored Suspicious User";
 			}
 		}
 
@@ -332,6 +337,38 @@ function onChatMessage(msg: ChatMessage, msgData: Twitch.AnyMessage, shouldRende
 				}
 			}
 		}
+	}
+
+    if ((msgData as Twitch.ChatMessage).bits) {
+		highlightColor = "#BF94FF";
+		highlightText = "";
+	}
+
+	if (msg.badges.partner) {
+		highlightColor = "#9146FF";
+		highlightText = "Verified";
+	}
+
+	if (msg.badges.moderator) {
+		highlightColor = "#00AD03";
+		highlightText = "Moderator";
+	}
+
+	if (msg.badges.vip) {
+		highlightColor = "#E005B9";
+		highlightText = "VIP";
+	}
+
+	if (msg.badges.broadcaster) {
+		highlightColor = "#E91916";
+		highlightText = "Broadcaster";
+	}
+
+	if (msg.first || highlightText.length) {
+		msg.setHighlight(
+			highlightColor,
+			`${msg.first ? "First Message" : ""} ${msg.first && highlightText.length ? "•" : ""} ${highlightText}`,
+		);
 	}
 
 	// message is sent by the current user
