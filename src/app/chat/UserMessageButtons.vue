@@ -1,5 +1,14 @@
 <template>
 	<div class="seventv-chat-message-buttons">
+        <div
+			v-if="showCopyIcon && !msg.moderation.deleted"
+			ref="copyButtonRef"
+			v-tooltip="'copy'"
+			class="seventv-button"
+			@click="copyMessageWithTime()"
+		>
+			<CopyIcon />
+		</div>
 		<div
 			v-if="showCopyIcon && !msg.moderation.deleted"
 			ref="copyButtonRef"
@@ -102,6 +111,17 @@ const copyToastContainer = useFloatScreen(copyButtonRef, {
 	enabled: () => copyToastOpen.value,
 	middleware: [shift({ padding: 8 })],
 });
+
+function copyMessageWithTime() {
+	if (copyToastOpen.value) return;
+
+	navigator.clipboard.writeText(`${props.msg.body}\t${new Date(props.msg.timestamp).toLocaleTimeString()}`);
+	copyToastOpen.value = true;
+
+	useTimeoutFn(() => {
+		copyToastOpen.value = false;
+	}, 1000);
+}
 
 function copyMessage() {
 	if (copyToastOpen.value) return;
