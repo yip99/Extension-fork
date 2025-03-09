@@ -267,6 +267,38 @@ definePropertyHook(controller.value.component, "props", {
 				args[0] = fn(args[0]);
 			}
 
+			if (
+				![v.isCurrentUserVIP, v.isCurrentUserEditor, v.isCurrentUserModerator, v.channelID === v.userID].some(
+					(hasRole) => hasRole,
+				)
+			) {
+				let messageCdBar = document.querySelector<HTMLElement>('div[role="status"] > .message-cd-bar');
+				if (!messageCdBar) {
+					messageCdBar = document.createElement("div");
+					messageCdBar.className = "message-cd-bar";
+					const style = document.createElement("style");
+					style.textContent = `
+                        .message-cd-bar {
+                            border-bottom: 4px solid var(--color-text-alt-2);
+                            width: 0%;
+                            position: absolute;
+                            bottom: -2px;
+                            border-radius: 10em;
+                            transition: all 30s;
+                        }
+                        .reset-width {
+                            transition: all 0s;
+                            width: 100%;
+                        }
+                    `;
+					messageCdBar.appendChild(style);
+					document.querySelector('div[role="status"]')?.appendChild(messageCdBar);
+				}
+				messageCdBar.classList.add("reset-width");
+				messageCdBar.offsetWidth;
+				messageCdBar.classList.remove("reset-width");
+			}
+
 			return old?.apply(this, args);
 		});
 
