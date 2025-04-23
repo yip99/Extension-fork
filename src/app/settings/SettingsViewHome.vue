@@ -16,7 +16,7 @@
 								<CloudIcon />
 							</span>
 						</template>
-						<span v-else>v{{ version }}</span>
+						<span v-else>v{{ version }}({{ remoteVersion }})</span>
 					</span>
 					<span class="seventv-settings-compact">API: {{ appServer }}</span>
 				</div>
