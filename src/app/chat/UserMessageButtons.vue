@@ -1,6 +1,6 @@
 <template>
 	<div class="seventv-chat-message-buttons">
-		<div class="seventv-button" @click="saveMessageWithTime">+</div>
+		<div class="seventv-button" ref="savedButtonRef" @click="saveMessageWithTime"><PlusIcon /></div>
 		<div
 			v-if="showCopyIcon && !msg.moderation.deleted"
 			ref="copyButtonRef"
@@ -48,6 +48,15 @@
 			</UiConfirmPrompt>
 		</Teleport>
 	</template>
+
+    <!-- Toast for total saved -->
+	<template v-if="savedToastOpen && savedToastContainer">
+		<Teleport :to="savedToastContainer">
+			<UiCopiedMessageToast @close="savedToastOpen = false">
+				<span>{{ savedMessageCount }}</span>
+			</UiCopiedMessageToast>
+		</Teleport>
+	</template>
 </template>
 
 <script setup lang="ts">
@@ -60,6 +69,7 @@ import { useTray } from "@/site/twitch.tv/modules/chat/components/tray/ChatTray"
 import CopyIcon from "@/assets/svg/icons/CopyIcon.vue";
 import PinIcon from "@/assets/svg/icons/PinIcon.vue";
 import ReplyIcon from "@/assets/svg/icons/ReplyIcon.vue";
+import PlusIcon from "@/assets/svg/icons/PlusIcon.vue";
 import TwChatReply from "@/assets/svg/twitch/TwChatReply.vue";
 import UserTag from "@/app/chat/UserTag.vue";
 import UiConfirmPrompt from "@/ui/UiConfirmPrompt.vue";
@@ -104,6 +114,14 @@ const copyToastContainer = useFloatScreen(copyButtonRef, {
 	middleware: [shift({ padding: 8 })],
 });
 
+const savedToastOpen = ref(false);
+const savedButtonRef = ref<HTMLElement>();
+const savedToastContainer = useFloatScreen(savedButtonRef, {
+	enabled: () => savedToastOpen.value,
+	middleware: [shift({ padding: 8 })],
+});
+const savedMessageCount = ref(0);
+
 function saveMessageWithTime(): void {
 	const int = JSON.parse(localStorage.getItem("myInt") || "{}");
 	const time = new Date(props.msg.timestamp);
@@ -112,6 +130,12 @@ function saveMessageWithTime(): void {
 	const ss = time.getSeconds().toString().padStart(2, "0");
 	int[props.msg.id] = `${props.msg.body}\t${HH}${mm}${ss}`;
 	localStorage.setItem("myInt", JSON.stringify(int));
+
+    savedMessageCount.value = Object.keys(int).length;
+	savedToastOpen.value = true;
+	useTimeoutFn(() => {
+		savedToastOpen.value = false;
+	}, 1000);
 }
 
 function copyMessage() {
