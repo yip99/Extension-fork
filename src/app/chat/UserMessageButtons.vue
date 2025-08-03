@@ -1,5 +1,6 @@
 <template>
 	<div class="seventv-chat-message-buttons">
+		<div class="seventv-button" ref="savedButtonRef" @click="selectMessage">S</div>
 		<div class="seventv-button" ref="savedButtonRef" @click="saveMessageWithTime"><PlusIcon /></div>
 		<div
 			v-if="showCopyIcon && !msg.moderation.deleted"
@@ -113,6 +114,16 @@ const copyToastContainer = useFloatScreen(copyButtonRef, {
 	enabled: () => copyToastOpen.value,
 	middleware: [shift({ padding: 8 })],
 });
+
+function selectMessage(): void {
+    const selection = window.getSelection();
+    if(!selection) return;
+    const range = document.createRange();
+    const messageBody = document.querySelector(`[msg-id="${props.msg.id}"] .seventv-chat-message-body`);
+    range.selectNodeContents(messageBody as Node);
+    selection.removeAllRanges();
+    selection.addRange(range);
+}
 
 const savedToastOpen = ref(false);
 const savedButtonRef = ref<HTMLElement>();
