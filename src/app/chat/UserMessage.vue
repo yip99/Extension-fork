@@ -348,5 +348,9 @@ watchEffect(() => {
 	font-variant-numeric: tabular-nums;
 	letter-spacing: -0.1rem;
 	color: var(--seventv-muted);
+    position: absolute;
+    top: 0;
+    transform: translateY(-50%);
+    font-size: 1rem;
 }
 </style>
