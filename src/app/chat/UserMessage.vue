@@ -285,7 +285,6 @@ watchEffect(() => {
 		border-bottom: none;
 
 		&[data-highlight-style="0"] {
-			border-color: var(--seventv-highlight-color);
 			background-color: var(--seventv-highlight-dim-color);
 
 			.seventv-chat-message-highlight-label {
